@@ -1,0 +1,12 @@
+# Ignore all log files
+*.log
+
+# Ignore session directories
+session_*/
+
+# Keep the README
+!README.md
+
+# Ignore analysis exports
+*.json
+!.gitkeep
