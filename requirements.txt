@@ -1,0 +1,44 @@
+# Agent Framework Requirements
+
+# Core dependencies
+python>=3.9
+
+# Async support
+asyncio
+
+# Data processing
+numpy>=1.21.0
+pandas>=1.3.0
+
+# Machine Learning
+torch>=2.0.0
+transformers>=4.30.0
+
+# Reinforcement Learning
+stable-baselines3>=2.0.0
+gymnasium>=0.28.0
+
+# Evolution Algorithms
+deap>=1.4.0
+
+# Distributed Computing
+ray>=2.5.0
+
+# Logging and monitoring (already in stdlib but listed for clarity)
+# logging - built-in
+# json - built-in
+# pathlib - built-in
+
+# Testing
+pytest>=7.3.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# Code quality
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.0.0
+
+# Documentation
+sphinx>=5.0.0
+sphinx-rtd-theme>=1.2.0
