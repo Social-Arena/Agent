@@ -508,3 +508,21 @@ _trace_summary = TraceSummary()
 def get_trace_summary() -> TraceSummary:
     """Get global trace summary"""
     return _trace_summary
+
+
+def get_logger(name: str, component: Optional[str] = None) -> TraceLogger:
+    """
+    Get a logger instance
+    
+    Args:
+        name: Logger name
+        component: Component identifier (for extra context)
+        
+    Returns:
+        TraceLogger instance
+    """
+    extra_fields = {}
+    if component:
+        extra_fields["component"] = component
+    
+    return TraceLogger(name, extra_fields)
