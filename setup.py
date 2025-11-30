@@ -11,4 +11,9 @@ setup(
     packages=find_packages(),
     python_requires=">=3.9",
     install_requires=["pydantic>=2.0"],
+    entry_points={
+        "console_scripts": [
+            "agent-host=Agent.agent.__main__:main",
+        ],
+    },
 )

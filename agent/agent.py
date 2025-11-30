@@ -1,9 +1,9 @@
 """
 Social Arena Agent - Minimal Implementation
-A Twitter-like AI agent with 12 fundamental actions
+A Twitter-like AI agent with 9 fundamental actions
 """
 
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Protocol
 from pydantic import BaseModel, Field
 from datetime import datetime
 import sys
@@ -15,16 +15,119 @@ if str(_external_feed_path) not in sys.path:
     sys.path.insert(0, str(_external_feed_path))
 
 
+class RecommendationSystem(Protocol):
+    """
+    Protocol for recommendation systems - the platform algorithm
+    
+    The recommendation system is the MEDIATOR between:
+    - Supply: All feeds created by all agents (content pool)
+    - Demand: What each individual agent sees (personalized)
+    
+    It's essentially Twitter's algorithm, Facebook's feed, TikTok's For You page.
+    This is what makes each social platform unique and shapes all network dynamics.
+    
+    Key responsibilities:
+    1. Maintain global feed pool (all content)
+    2. Maintain agent pool (all users)
+    3. Track social graph (who follows whom)
+    4. Personalize content for each agent
+    5. Learn from agent actions (feedback loop)
+    
+    See RECOMMENDATION_SYSTEM_SPEC.md for detailed requirements.
+    """
+    
+    def ingest_feed(self, feed: Dict[str, Any]) -> None:
+        """
+        Add new content to the system
+        
+        When any agent creates content (post/reply/retweet/quote),
+        it enters the recommendation system's feed pool.
+        
+        Args:
+            feed: Feed data dict from agent.create_post(), etc.
+        """
+        ...
+    
+    def fetch(self, agent_id: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Get personalized content for a specific agent
+        
+        This is THE core function - implements the algorithm that
+        determines what each agent sees. Different implementations
+        create different social platforms.
+        
+        Args:
+            agent_id: Which agent is requesting content
+            context: Additional context (time, recent activity, etc.)
+            
+        Returns:
+            Dict containing:
+                - feeds: List[Dict] - Ranked/filtered posts to show this agent
+                - users: List[Dict] - Suggested users to follow
+                - trends: List[str] - Trending topics/hashtags
+                - metadata: Dict - Algorithm explanation (optional)
+        
+        Algorithm strategies:
+            - Chronological: Recent posts from followed users
+            - Engagement: Viral/popular content
+            - Interest-based: Match agent's preferences
+            - Collaborative: Similar to what similar agents like
+            - Exploration: Balance known content with discovery
+        """
+        ...
+    
+    def record_action(
+        self, 
+        agent_id: str, 
+        action: str, 
+        target_id: str,
+        metadata: Optional[Dict[str, Any]] = None
+    ) -> None:
+        """
+        Record agent action to improve recommendations
+        
+        When agents like, reply, follow, etc., the system learns:
+        - What content engages which agents
+        - How to better personalize future feeds
+        - Which creators to amplify
+        
+        This creates the feedback loop that shapes network dynamics.
+        
+        Args:
+            agent_id: Who performed the action
+            action: What they did (like, reply, follow, etc.)
+            target_id: What they did it to (feed_id or user_id)
+            metadata: Additional data (dwell time, click depth, etc.)
+        """
+        ...
+    
+    def get_stats(self) -> Dict[str, Any]:
+        """
+        Get system statistics for analysis
+        
+        Returns:
+            Dict with metrics like:
+                - total_feeds: Number of posts in system
+                - total_agents: Number of users
+                - engagement_rate: Average engagement
+                - content_diversity: Variety of content
+                - network_density: How connected the graph is
+        """
+        ...
+
+
 class Agent(BaseModel):
     """
-    Base Agent class with 12 fundamental actions for Social Arena simulation
+    Base Agent class with 9 fundamental actions for Social Arena simulation
     
-    Every agent (AI or human) has these same 12 actions:
+    Every agent (AI or human) has these same 9 actions:
     - Content Creation (4): create_post, reply, retweet, quote
     - Engagement (2): like, unlike
     - Social Graph (2): follow, unfollow
-    - Discovery (3): browse_feed, read_tweet, search
     - Decision Making (1): decide_next_action
+    
+    Note: Agents don't discover content themselves. Content is fed to them
+    by a RecommendationSystem (like real social media algorithms).
     """
     
     # Identity
@@ -40,7 +143,7 @@ class Agent(BaseModel):
     liked_tweets: List[str] = Field(default_factory=list)
     
     # ================================================================
-    # 12 FUNDAMENTAL ACTIONS
+    # 9 FUNDAMENTAL ACTIONS
     # ================================================================
     
     # -------------------- CONTENT CREATION (4) --------------------
@@ -195,60 +298,25 @@ class Agent(BaseModel):
             return True
         return False
     
-    # -------------------- DISCOVERY (3) --------------------
-    
-    def browse_feed(self, feed_type: str = "home", limit: int = 50) -> List[Dict[str, Any]]:
-        """
-        ACTION 9: Browse tweets from feed
-        
-        Args:
-            feed_type: "home", "trending", "following"
-            limit: Max tweets to return
-            
-        Returns:
-            List of Feed data dicts (override in environment)
-        """
-        return []
-    
-    def read_tweet(self, tweet_id: str) -> Optional[Dict[str, Any]]:
-        """
-        ACTION 10: Read single tweet
-        
-        Args:
-            tweet_id: ID of tweet to read
-            
-        Returns:
-            Feed data dict or None (override in environment)
-        """
-        return None
-    
-    def search(self, query: str, limit: int = 20) -> List[Dict[str, Any]]:
-        """
-        ACTION 11: Search tweets
-        
-        Args:
-            query: Search query (hashtag, keyword, @mention)
-            limit: Max results
-            
-        Returns:
-            List of Feed data dicts (override in environment)
-        """
-        return []
-    
     # -------------------- DECISION MAKING (1) --------------------
     
-    def decide_next_action(self, context: Dict[str, Any]) -> str:
+    def decide_next_action(self, recommended_content: Dict[str, Any]) -> str:
         """
-        ACTION 12: Decide what to do next
+        ACTION 9: Decide what to do next based on recommended content
         
         Args:
-            context: Current context (tweets, trends, etc.)
+            recommended_content: Content from RecommendationSystem.fetch()
+                - feeds: List of recommended tweets
+                - users: List of recommended users
+                - trends: List of trending topics
             
         Returns:
-            Action name: "post", "engage", "network", "browse", "idle"
+            Action name: "post", "reply", "retweet", "quote", "like", "follow", "idle"
             
         Note:
-            Override this method to implement custom AI behavior
+            Override this method to implement custom AI behavior.
+            The agent receives content from external recommendation system,
+            not by browsing/searching itself.
         """
         return "idle"
     
