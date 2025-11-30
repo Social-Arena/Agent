@@ -1,11 +1,9 @@
 """
-Social Arena Agent System
+Agent Module
 """
 
-__version__ = "1.0.0"
-
-from Agent.agent.agent import Agent
-from Agent.agent.host import (
+from .agent import Agent
+from .host import (
     LanguageModelHost,
     BackendConfig,
     BackendProvider,
@@ -29,3 +27,4 @@ __all__ = [
     "create_openai_host",
     "create_anthropic_host"
 ]
+
