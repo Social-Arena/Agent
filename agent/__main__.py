@@ -4,7 +4,16 @@ Agent CLI - Command Line Interface for Social Arena Agent
 
 import argparse
 import sys
+import os
+from pathlib import Path
+from dotenv import load_dotenv
 from .host import create_qwen_host, create_openai_host, create_anthropic_host, BackendProvider
+
+# Load .env file from project root
+env_path = Path(__file__).parent.parent / ".env"
+if env_path.exists():
+    load_dotenv(env_path)
+    print(f"✓ Loaded environment variables from {env_path}")
 
 
 def main():

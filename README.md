@@ -9,13 +9,31 @@
 ```bash
 git clone https://github.com/Social-Arena/Agent.git
 cd Agent
-git submodule update --init --recursive
+git submodule update --init --recursive  # Fetches Feed and Recommendation submodules
+
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # On macOS/Linux
+# venv\Scripts\activate  # On Windows
+
+# Install package
 pip install -e .
 
-# Optional: Set up API keys for LLM hosts
+# Set up API keys for LLM hosts
 cp env.template .env
 # Edit .env with your actual API keys
 ```
+
+---
+
+## Architecture
+
+This package includes two external submodules:
+
+- **[Feed](https://github.com/Social-Arena/Feed)** - Twitter-like data structures (Feed, User, Entities)
+- **[Recommendation](https://github.com/Social-Arena/Recommendation)** - Recommendation system implementations and specs
+
+Agents operate on Feeds, and a Recommendation System mediates what each agent sees.
 
 ---
 
@@ -89,14 +107,17 @@ asyncio.run(run_agent())
 **Start the LLM host server via CLI:**
 
 ```bash
+# Activate virtual environment first
+source venv/bin/activate
+
 # Option 1: OpenAI GPT-4o
-python -m Agent --provider openai --port 8000
+python -m agent --provider openai --port 8000
 
 # Option 2: Anthropic Claude
-python -m Agent --provider anthropic --port 8000
+python -m agent --provider anthropic --port 8000
 
 # Option 3: Local Qwen3-8B
-python -m Agent --provider qwen --port 8000
+python -m agent --provider qwen --port 8000
 
 # Or use the installed command
 agent-host --provider openai --port 8000
@@ -159,6 +180,28 @@ class MyRecommendationSystem:
             "trends": [...]  # Highlight these topics
         }
 ```
+
+---
+
+## Examples
+
+See complete working example:
+
+```bash
+# Activate virtual environment
+source venv/bin/activate
+
+# Start LLM host
+python -m agent --provider openai --port 8000
+
+# In another terminal (also activate venv)
+source venv/bin/activate
+python examples/simple_simulation.py
+
+# Results saved to examples/cache/sim_TIMESTAMP/
+```
+
+See `examples/README.md` for details.
 
 ---
 

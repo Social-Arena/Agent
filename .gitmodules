@@ -1,3 +1,6 @@
 [submodule "external/Feed"]
 	path = external/Feed
 	url = https://github.com/Social-Arena/Feed
+[submodule "external/Recommendation"]
+	path = external/Recommendation
+	url = https://github.com/Social-Arena/Recommendation

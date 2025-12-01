@@ -6,13 +6,6 @@ A Twitter-like AI agent with 9 fundamental actions
 from typing import List, Optional, Dict, Any, Protocol
 from pydantic import BaseModel, Field
 from datetime import datetime
-import sys
-from pathlib import Path
-
-# Add external/Feed to path
-_external_feed_path = Path(__file__).parent / "external" / "Feed"
-if str(_external_feed_path) not in sys.path:
-    sys.path.insert(0, str(_external_feed_path))
 
 
 class RecommendationSystem(Protocol):
@@ -33,7 +26,7 @@ class RecommendationSystem(Protocol):
     4. Personalize content for each agent
     5. Learn from agent actions (feedback loop)
     
-    See RECOMMENDATION_SYSTEM_SPEC.md for detailed requirements.
+    See external/Recommendation for detailed requirements and implementations.
     """
     
     def ingest_feed(self, feed: Dict[str, Any]) -> None:

@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent"
+version = "1.0.0"
+description = "Minimal AI agent with 9 fundamental actions for Social Arena"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Social-Arena"}
+]
+keywords = ["ai", "agents", "social-media", "simulation", "llm"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    # Core
+    "pydantic>=2.0",
+    "python-dotenv>=1.0.0",
+    # Social Arena packages (from GitHub)
+    "feed @ git+https://github.com/Social-Arena/Feed.git",
+    "recommendation @ git+https://github.com/Social-Arena/Recommendation.git",
+    # LLM Hosting
+    "fastapi>=0.115.0",
+    "uvicorn>=0.32.0",
+    "openai>=1.0.0",
+    "anthropic>=0.40.0",
+    # Local Models
+    "transformers>=4.51.0",
+    "torch>=2.0.0",
+]
+
+[project.scripts]
+agent-host = "agent.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/Social-Arena/Agent"
+Repository = "https://github.com/Social-Arena/Agent"
+Documentation = "https://github.com/Social-Arena/Agent#readme"
+"Bug Tracker" = "https://github.com/Social-Arena/Agent/issues"
+
+[tool.setuptools]
+packages = ["agent"]
+
+[tool.setuptools.package-data]
+agent = ["py.typed"]
+
+[tool.black]
+line-length = 100
+target-version = ["py39", "py310", "py311", "py312"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
